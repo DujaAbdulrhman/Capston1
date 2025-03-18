@@ -6,12 +6,18 @@ import jakarta.validation.Valid;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class ProductService {
     private  List<Product> products = new ArrayList<>();
 
 
+    private final CategoryService categoryService;
+
+    public ProductService(CategoryService categoryService) {
+        this.categoryService = categoryService;
+    }
 
     public String addProduct(@Valid Product product, CategoryService categoryService) {
 
@@ -35,14 +41,7 @@ public class ProductService {
         return false;
     }
 
-    public Product getProductById(String id) {
-        for (Product product : products) {
-            if (product.getId().equals(id)) {
-                return product;
-            }
-        }
-        return null;
-    }
+    
 
     public void updateProduct(String id, @Valid Product updatedProduct) {
         for (int i = 0; i < products.size(); i++) {
@@ -62,38 +61,41 @@ public class ProductService {
         }
     }
 
-    //1endpoint discount
-    public String getDiscount(@Valid Product product) {
+    //حقت الديسكاونت
+    public double getDiscount(Product product) {
         if (product.getPrice() >= 100) {
             int discount = 12;
-            //the operation for the discount
+
             double newPrice = product.getPrice() - (product.getPrice() * discount / 100);
             product.setPrice(newPrice);
-            return "You got a 12% discount";
+            return newPrice;
         } else {
-            return "Your amount should be 100 or more to get a discount";
+            return 0;
         }
     }
 
-    //2 endpoints sort the prices
+
     public List<Product> getSortedProducts() {
         products.sort(Comparator.comparing(Product::getPrice));
         return products;
     }
 
-    public void addProduct(Product product) {
-        products.add(product);
-    }
-//3
+    //ترجعلي الي انباعو
     public List<Product> getSoldProducts() {
         return products.stream()
                 .filter(product -> product.getSalesCount() > 0)
                 .collect(Collectors.toList());
     }
 
-    public void addProductt(Product product) {
+    public List<Product> addProductt(Product product) {
         products.add(product);
+        return products;
     }
 
-
+    //تعرضلي منتجات من الفئه نفسها
+    public List<Product> getProductsByCategory(String categoryId) {
+        return products.stream()
+                .filter(product -> product.getCategoryID().equals(categoryId))
+                .collect(Collectors.toList());
+    }
 }
