@@ -92,7 +92,7 @@ public class CategoryService {
         return false;
     }
 
-    //خليته بوليان عشان استخدامه بالكنترولر
+
     public boolean deleteCategory(String id) {
         for (int i = 0; i < categories.size(); i++) {
             if (categories.get(i).getId().equals(id)) {
