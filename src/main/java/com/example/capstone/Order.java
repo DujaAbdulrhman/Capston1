@@ -1,6 +1,6 @@
 package com.example.capstone.Model;
 
-
+//ادري مكانه غلط بس ماقدرت احطه مع الموديلز لاني سويته بعد ماسلمت
 
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
