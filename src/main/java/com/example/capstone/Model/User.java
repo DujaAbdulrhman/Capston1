@@ -3,6 +3,10 @@ package com.example.capstone.Model;
 import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.Setter;
+import org.springframework.core.annotation.Order;
+
+import java.util.List;
 
 @Data
 @AllArgsConstructor
@@ -31,6 +35,10 @@ public class User {
     @PositiveOrZero(message = "Balance must be positive or zero")
     private Double balance;
 
+    @Setter
+    private List<Order> orderHistory;
 
-
+    public void addOrderToHistory(Order order) {
+        this.orderHistory.add(order);
+    }
 }
