@@ -72,4 +72,11 @@ public class MerchantController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Merchant not found");
         }
     }
+    @GetMapping("/checkstock/{id}")
+    public ResponseEntity<String> checkStock(@PathVariable String id) {
+
+        String message = merchantService.checkMerchantStock(id);
+        return ResponseEntity.status(200).body(message);
+    }
+
 }
