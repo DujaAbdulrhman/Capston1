@@ -80,11 +80,18 @@ public class productController {
             return ResponseEntity.status(200).body(result);
     }
 
-    //2 endpoint not logical
+    //2 
     @GetMapping("/sorted")
     public ResponseEntity<List<Product>> getSortedProducts() {
         List<Product> sortedProducts = productService.getSortedProducts();
         return ResponseEntity.ok(sortedProducts);
+    }
+
+    //3
+    @GetMapping("/sold")
+    public ResponseEntity<List<Product>> getSoldProducts() {
+        List<Product> soldProducts = productService.getSoldProducts();
+        return ResponseEntity.ok(soldProducts);
     }
 
 }
