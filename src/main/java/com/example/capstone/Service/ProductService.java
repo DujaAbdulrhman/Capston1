@@ -75,13 +75,23 @@ public class ProductService {
         }
     }
 
-    //2 endpoint sort the prices
+    //2 endpoints sort the prices
     public List<Product> getSortedProducts() {
         products.sort(Comparator.comparing(Product::getPrice));
         return products;
     }
 
     public void addProduct(Product product) {
+        products.add(product);
+    }
+//3
+    public List<Product> getSoldProducts() {
+        return products.stream()
+                .filter(product -> product.getSalesCount() > 0)
+                .collect(Collectors.toList());
+    }
+
+    public void addProductt(Product product) {
         products.add(product);
     }
 
