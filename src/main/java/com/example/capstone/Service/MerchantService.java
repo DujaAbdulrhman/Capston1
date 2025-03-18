@@ -56,4 +56,15 @@ public class MerchantService {
         }
         return false;
     }
+    public String checkMerchantStock(String merchantId) {
+        for (Merchant merchant : merchants) {
+            if (merchant.getId().equals(merchantId)) {
+                if (merchant.getStock() < 10) {
+                    return "Stock for merchant is low";
+                }
+                return "Stock level is sufficient";
+            }
+        }
+        return "Merchant not found";
+    }
 }
