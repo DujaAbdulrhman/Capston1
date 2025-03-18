@@ -3,11 +3,12 @@ package com.example.capstone.Service;
 
 import com.example.capstone.Model.MerchantStock;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotEmpty;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
-
 @Service
 public class MerchantStockService {
 
@@ -22,9 +23,8 @@ public class MerchantStockService {
     }
 
 
-
     public boolean addMerchantStock(@Valid MerchantStock merchantStock) {
-        if (getMerchantStockById(merchantStock.getId()) != null) {
+        if (getMerchantStockById(merchantStock.getId()) ) {
             return false; // اوريدي موجود
         }
         // نتأكد اذا معرف التاجر موجود
@@ -33,10 +33,14 @@ public class MerchantStockService {
         }
         // نتأكد اذا معرف البرودكت موجود
         if (!productService.existsById(merchantStock.getProductId())) {
-            return false; // اذامو موجود
+            return false; // اذا مو موجود
         }
         merchantStocks.add(merchantStock);//الاضافه اذا موجود
         return true;
+    }
+
+    private boolean getMerchantStockById(@NotEmpty(message = "Merchant Stock can't be eppty") String id) {
+        return false;
     }
 
     public List<MerchantStock> getAllMerchantStocks() {
@@ -44,7 +48,7 @@ public class MerchantStockService {
     }
 
 
-    public MerchantStock getMerchantStockById(String id) {
+    public MerchantStock getMerchantStock(String id) {
         for (MerchantStock merchantStock : merchantStocks) {
             if (merchantStock.getId().equals(id)) {
                 return merchantStock;
@@ -85,7 +89,6 @@ public class MerchantStockService {
         throw new IllegalArgumentException("Merchant stock not found");
     }
 
-    public void addStock(String productId, String merchantId, int additionalStock) {
-    }
+
 }
 
