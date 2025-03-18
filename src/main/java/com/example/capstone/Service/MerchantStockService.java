@@ -1,94 +1,78 @@
 package com.example.capstone.Service;
 
-
-import com.example.capstone.Model.MerchantStock;
+import com.example.capstone.Model.Merchant;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotEmpty;
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+
 @Service
-public class MerchantStockService {
+public class MerchantService {
+    private final ArrayList<Merchant> merchants = new ArrayList<>();
+  //  private List<Merchant> merchants = new ArrayList<>();
 
-    private static List<MerchantStock> merchantStocks = new ArrayList<>();
-
-    private final MerchantService merchantService;
-    private final ProductService productService;
-
-    public MerchantStockService(MerchantService merchantService, ProductService productService) {
-        this.merchantService = merchantService;
-        this.productService = productService;
-    }
-
-
-    public boolean addMerchantStock(@Valid MerchantStock merchantStock) {
-        if (getMerchantStockById(merchantStock.getId()) ) {
-            return false; // اوريدي موجود
+    public boolean addMerchant( Merchant merchant) {
+        for (Merchant existingMerchant : merchants) {
+            if (existingMerchant.getId().equals(merchant.getId())) {
+                return false;
+            }
         }
-        // نتأكد اذا معرف التاجر موجود
-        if (!merchantService.existsById(merchantStock.getMerchantId())) {
-            return false; // Invalid merchant ID
-        }
-        // نتأكد اذا معرف البرودكت موجود
-        if (!productService.existsById(merchantStock.getProductId())) {
-            return false; // اذا مو موجود
-        }
-        merchantStocks.add(merchantStock);//الاضافه اذا موجود
+        merchants.add(merchant);
         return true;
     }
 
-    private boolean getMerchantStockById(@NotEmpty(message = "Merchant Stock can't be eppty") String id) {
-        return false;
+
+    public ArrayList<Merchant> getAllMerchants() {
+        return merchants;
     }
 
-    public List<MerchantStock> getAllMerchantStocks() {
-        return merchantStocks;
-    }
-
-
-    public MerchantStock getMerchantStock(String id) {
-        for (MerchantStock merchantStock : merchantStocks) {
-            if (merchantStock.getId().equals(id)) {
-                return merchantStock;
-            }
-        }
-        return null; // اذا مو موجوده
-    }
-
-
-    public boolean updateMerchantStock(String id, @Valid MerchantStock updatedMerchantStock) {
-        for (int i = 0; i < merchantStocks.size(); i++) {
-            if (merchantStocks.get(i).getId().equals(id)) {
-                merchantStocks.set(i, updatedMerchantStock);
-                return true; // اذا تعدلت
-            }
-        }
-        return false;
-    }
-
-    public static boolean deleteMerchantStock(String id) {
-        for (int i = 0; i < merchantStocks.size(); i++) {
-            if (merchantStocks.get(i).getId().equals(id)) {
-                merchantStocks.remove(i);
+    public boolean updateMerchant(String id, Merchant updatedMerchant) {
+        for (int i = 0; i < merchants.size(); i++) {
+            Merchant existingMerchant = merchants.get(i);
+            if (existingMerchant.getId().equals(id)) {
+                merchants.set(i, updatedMerchant);
                 return true;
             }
         }
         return false;
     }
 
-
-    public void addtoStock(String productId, String merchantId, int additionalStock) {
-        for (MerchantStock merchantStock : merchantStocks) {
-            if (merchantStock.getProductId().equals(productId) && merchantStock.getMerchantId().equals(merchantId)) {
-                merchantStock.setStock(merchantStock.getStock() + additionalStock);
-                return;
+    public boolean deleteMerchant(String id) {
+        for (int i = 0; i < merchants.size(); i++) {
+            if (merchants.get(i).getId().equals(id)) {
+                merchants.remove(i);
+                return true;
             }
         }
-        throw new IllegalArgumentException("Merchant stock not found");
+        return false;
     }
 
+    //نشيك على اي دي التاجر اذا التاجر موجود او لا
+    public boolean existsById(String id) {
+        for (Merchant merchant : merchants) {
+            if (merchant.getId().equals(id)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    //4
+    public <merchant> String checkMerchantStock(String merchantId) {
+        for (Merchant merchant : merchants) {
+            if (merchant.getId().equals(merchantId)) {
+
+                for (Merchant mr:merchants){{
+                    if (merchant.getStock()<10){
+                        return "Stock is low";
+                    }
+                }return "Stock level is sufficient";
+                }
+
+                }
+        }
+        return "Merchant not found";
+    }
 
 }
-
