@@ -4,6 +4,7 @@ import com.example.capstone.Model.Product;
 import com.example.capstone.Service.CategoryService;
 import com.example.capstone.Service.ProductService;
 import jakarta.validation.Valid;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
@@ -18,11 +19,12 @@ public class productController {
 
     //TODO: delete and update
 
+
         private ProductService productService;
         private final CategoryService categoryService;
 
     private List<Product> products = new ArrayList<>();
-
+    private List<Product> mostSeelP=new ArrayList<>();
 
     public productController(ProductService productService, CategoryService categoryService) {
         this.productService = productService;
@@ -63,36 +65,43 @@ public class productController {
         return ResponseEntity.status(200).body("Product deleted successfully!");
     }
 
-    //endpoint 1
-        @GetMapping("/discount/{index}")
-        public ResponseEntity getDiscount(@PathVariable int index, @RequestBody @Valid Product product, Errors errors){
-        if (errors.hasErrors()){
-            String massage = errors.getAllErrors().get(0).getDefaultMessage();;
-            return  ResponseEntity.status(400).body(massage);
-        }
-            if (index < 0 || index >= products.size()) {
-                return ResponseEntity.status(400).body("index out of range");
-            }
-            Product productToUpdate = products.get(index);
-            productToUpdate.setPrice(product.getPrice());
 
-            String result = productService.getDiscount(productToUpdate);
-            return ResponseEntity.status(200).body(result);
+
+
+    
+    @GetMapping("/discount/{index}")
+    public ResponseEntity<?> getDiscount(@PathVariable int index, @RequestParam double price) {
+        if (index < 0 || index >= products.size()) {
+
+            return ResponseEntity.status(400).body("Index out of range");
+        }
+
+        Product productToUpdate = products.get(index);
+        productToUpdate.setPrice(price);
+        double result = productService.getDiscount(productToUpdate);
+
+        return ResponseEntity.status(200).body(result);
     }
 
-    //2 
+
+
+    //3 endpoint
     @GetMapping("/sorted")
     public ResponseEntity<List<Product>> getSortedProducts() {
         List<Product> sortedProducts = productService.getSortedProducts();
         return ResponseEntity.ok(sortedProducts);
     }
-
-    //3
-    @GetMapping("/sold")
-    public ResponseEntity<List<Product>> getSoldProducts() {
-        List<Product> soldProducts = productService.getSoldProducts();
-        return ResponseEntity.ok(soldProducts);
+    //4
+    @GetMapping("/mostsold")
+    public ResponseEntity<List<Product>> getMostSoldProducts() {
+        List<Product> mostSoldProducts = productService.getSoldProducts();
+        return ResponseEntity.status(200).body(mostSoldProducts);
+    }
+    //5
+    @GetMapping("/search/category")
+    public ResponseEntity<String> searchByCategory(@RequestParam String categoryId) {
+        String productsInCategory = productService.getProductsByCategory(categoryId).toString();
+        return ResponseEntity.status(200).body(productsInCategory);
     }
 
 }
-
