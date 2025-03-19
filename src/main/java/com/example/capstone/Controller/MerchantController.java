@@ -1,40 +1,39 @@
 package com.example.capstone.Controller;
 
-
 import com.example.capstone.Model.Merchant;
-import com.example.capstone.Model.MerchantStock;
 import com.example.capstone.Service.MerchantService;
 import com.example.capstone.Service.MerchantStockService;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/v1/marchantstock")
-public class merchantStockController {
+@RequestMapping("/api/v1/merchant")
+public class MerchantController {
 
-    private final MerchantService marchentStockService;
-    private final MerchantStockService merchentStock;
     private final MerchantService merchantService;
-    private final MerchantStockService merchentStockService;
+    private final MerchantStockService merchantStockService;
 
-
-    public merchantStockController(MerchantStockService merchentStockService, MerchantService merchantService) {
-        this.merchentStock = merchentStockService;
-        this.marchentStockService = merchantService;
+   @Autowired
+    public MerchantController(MerchantService merchantService, MerchantStockService merchantStockService) {
         this.merchantService = merchantService;
-        this.merchentStockService = merchentStockService;
-    }
+       this.merchantStockService = merchantStockService;
+   }
+
     @PostMapping("/add")
     public ResponseEntity<String> addMerchant(@RequestBody @Valid Merchant merchant, Errors errors) {
         if (errors.hasErrors()) {
             String message = errors.getAllErrors().get(0).getDefaultMessage();
             return ResponseEntity.badRequest().body(message);
         }
-        boolean isAdded = merchantService.addMerchant(merchant); // Ensure 'merchant' is passed correctly
+        boolean isAdded = merchantService.addMerchant(merchant);
         if (isAdded) {
             return ResponseEntity.ok("Merchant added successfully");
         } else {
@@ -42,44 +41,59 @@ public class merchantStockController {
         }
     }
 
-    @GetMapping("/get")
-    public ResponseEntity<List<Merchant>> getAllMerchantStocks() {
-        List<Merchant> merchantStocks = marchentStockService.getAllMerchants();
-        return ResponseEntity.status(200).body(merchantStocks);
-    }
-
-
     @PutMapping("/update/{id}")
-    public ResponseEntity<String> updateMerchantStock(@PathVariable String id, @RequestBody @Valid MerchantStock updatedMerchantStock, Errors errors) {
+    public ResponseEntity<String> updateMerchant(@PathVariable String id, @RequestBody @Valid Merchant updatedMerchant, Errors errors) {
         if (errors.hasErrors()) {
             String message = errors.getAllErrors().get(0).getDefaultMessage();
             return ResponseEntity.badRequest().body(message);
         }
-
-        boolean isUpdated = merchentStockService.updateMerchantStock(id, updatedMerchantStock);
+        if (id.equals(updatedMerchant.getId())) {
+            return ResponseEntity.badRequest().body(updatedMerchant.getId());
+        }
+        boolean isUpdated = merchantService.updateMerchant(id, updatedMerchant);
         if (isUpdated) {
-            return ResponseEntity.ok("Merchant stock updated successfully");
+            return ResponseEntity.ok("Merchant updated successfully");
         } else {
-            return ResponseEntity.status(400).body("Merchant stock not found");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Merchant not found");
         }
     }
-    @DeleteMapping("/delete/{id}")
-    public ResponseEntity<String> deleteMerchantStock(@PathVariable String id){
-        boolean isDeleted=MerchantStockService.deleteMerchantStock(id);
-        if (isDeleted){
-            return ResponseEntity.status(200).body("Deleted Successfully");
-        }return ResponseEntity.status(400).body("Merchant stock not found");
+    @PostMapping("/addstock")
+    public ResponseEntity<String> addStock(
+            @RequestParam String productId,
+            @RequestParam String merchantId,
+            @RequestParam int additionalStock) {
+        try {
+            merchantStockService.addtoStock(productId, merchantId, additionalStock);
+            return ResponseEntity.status(HttpStatus.OK).body("Stock added successfully");
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
     }
 
-    //1 .
-    @PostMapping ("/addtostock")
-    public ResponseEntity<String> addtoStock( @RequestParam String productId ,@RequestParam String merchantId , @RequestParam int additionalStock) {
-        try {
-            merchentStockService.addtoStock(productId, merchantId, additionalStock);
-            return ResponseEntity.status(200).body("Stock added successfully");
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.status(400).body(e.getMessage());
+
+    @GetMapping("/get")
+    public ResponseEntity getAllMerchants() {
+        ArrayList<Merchant> merchants = merchantService.getAllMerchants();
+        return ResponseEntity.ok(merchants);
+    }
+
+
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity<String> deleteMerchant(@PathVariable String id) {
+        boolean isDeleted = merchantService.deleteMerchant(id);
+        if (isDeleted) {
+            return ResponseEntity.ok("Merchant deleted successfully");
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Merchant not found");
         }
     }
+
+    @GetMapping("/checkstock/{id}")
+    public ResponseEntity<String> checkStock(@PathVariable String id) {
+
+        String message = merchantService.checkMerchantStock(id);
+        return ResponseEntity.status(200).body(message);
+    }
+
 
 }
