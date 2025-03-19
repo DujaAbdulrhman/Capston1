@@ -15,5 +15,10 @@ public class Merchant {
     @NotEmpty
     @Size(min = 3, message = "Name must be at least 3 characters")
     private String name;
+    private int salesCount;
 
+
+    public int getStock() {
+        return 5;
+    }
 }
