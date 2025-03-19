@@ -1,35 +1,14 @@
-/*
 package com.example.capstone.Controller;
 
-import com.example.capstone.Service.UserService;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
-@RestController
-@RequestMapping("/api/v1/user")
-public class userController {
-
-    private final UserService userService;
-
-
-    public userController(UserService userService) {
-        this.userService = userService;
-    }
-
-    //TODO: CRUD
-
-
-}
-
-*/
-
-
-package com.example.capstone.Controller;
-
+import com.example.capstone.Model.MerchantStock;
+import com.example.capstone.Model.Product;
 import com.example.capstone.Model.User;
+import com.example.capstone.Service.MerchantStockService;
+import com.example.capstone.Service.ProductService;
 import com.example.capstone.Service.UserService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
@@ -42,10 +21,14 @@ import java.util.List;
 public class UserController {
 
     private final UserService userService;
+    private final ProductService productService;
+    private final MerchantStockService merchantStockService;
 
     @Autowired
-    public UserController(UserService userService) {
+    public UserController(UserService userService, ProductService productService, MerchantStockService merchantStockService) {
         this.userService = userService;
+        this.productService = productService;
+        this.merchantStockService = merchantStockService;
     }
 
     @PostMapping("/add")
@@ -81,6 +64,7 @@ public class UserController {
     }
 
 
+
     @PutMapping("/update/{id}")
     public ResponseEntity<String> updateUser(@PathVariable String id, @Valid @RequestBody User updatedUser, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
@@ -104,5 +88,17 @@ public class UserController {
         } else {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
         }
+    }
+
+    //6
+    @GetMapping("/orderhistory/{userId}")
+    public ResponseEntity<List<Order>> getOrderHistory(@PathVariable String userId) {
+        User user = userService.getUserById(userId);
+        if (user == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        }
+
+        List<Order> orderHistory = user.getOrderHistory(); // افترض أن لديك قائمة orderHistory في كلاس User
+        return ResponseEntity.status(HttpStatus.OK).body(orderHistory);
     }
 }
