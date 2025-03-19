@@ -5,6 +5,7 @@ import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import org.hibernate.validator.constraints.UniqueElements;
 
 @Data
 @AllArgsConstructor
@@ -16,9 +17,9 @@ public class Product {
     @NotNull
     private double price;
 
-    @NotNull(message = "Category ID must not be empty")
+    @NotNull(message = "category Iid must not be empty")
     private String categoryID;
 
+    private int salesCount;
 
-    //categoryID  لازم يتأكد انها موجوده بالكاتوجري كلاس فنسوي التحقق بالاي دي حقت البرودكت
 }
